@@ -1306,6 +1306,24 @@ void Pair::ev_tally4(int i, int j, int k, int m, double evdwl,
 }
 
 /* ----------------------------------------------------------------------
+   general ev tally function for many-body models where per-atom assignments
+   do not make sense. Expects newton_pair = 1.
+ ------------------------------------------------------------------------- */
+
+
+void Pair::ev_tally_mb(double evdwl, double sxx, double sxy, double sxz, double syy, double syz, double szz)
+{
+  eng_vdwl  += evdwl;
+
+  virial[0] += sxx;
+  virial[1] += syy;
+  virial[2] += szz;
+  virial[3] += sxy;
+  virial[4] += sxz;
+  virial[5] += syz; 
+}
+
+/* ----------------------------------------------------------------------
    tally ecoul and virial into each of atoms in list
    called by TIP4P potential, newton_pair is always on
    weight assignments by alpha, so contribution is all to O atom as alpha -> 0.0
