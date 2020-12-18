@@ -142,12 +142,12 @@ void PairCHIMES::coeff(int narg, char **arg)
 			setflag[i][j] = 1;
 			setflag[j][i] = 1;
 
-			cutsq[i][j]  = chimes_calculator.chimes_2b_cutoff[ chimes_calculator.atom_idx_pair_map[ (i-1)*chimes_calculator.natmtyps + (j-1) ] ][1];
+			cutsq[i][j]  = chimes_calculator.get_outer_cutoff_2B(i-1,j-1);
 			cutsq[i][j] *= cutsq[i][j];
 			
 			if (i!=j)
 			{
-				cutsq[j][i]  = chimes_calculator.chimes_2b_cutoff[ chimes_calculator.atom_idx_pair_map[ (j-1)*chimes_calculator.natmtyps + (i-1) ] ][1];
+				cutsq[j][i]  = chimes_calculator.get_outer_cutoff_2B(j-1,i-1);
 				cutsq[j][i] *= cutsq[j][i];
 			}			
 		}

@@ -37,16 +37,22 @@ done
 if (test $1 = 1) then
 
   if (test -e ../Makefile.package) then
-    sed -i -e 's|^PKG_INC =[ \t]*|&-I../../lib/chimes/|' ../Makefile.package
-    sed -i -e 's|^PKG_PATH =[ \t]*|&-L../../lib/chimes/ |' ../Makefile.package
-#    sed -i -e 's|^PKG_CPP_DEPENDS =[ \t]*|&-L../../lib/chimes/chimesFF.cpp |' ../Makefile.package
-#    sed -i -e 's|^PKG_SYSINC =[ \t]*|&$(chimes_SYSINC) |' ../Makefile.package
-#    sed -i -e 's|^PKG_SYSLIB =[ \t]*|&$(chimes_SYSLIB) |' ../Makefile.package
-#    sed -i -e 's|^PKG_SYSPATH =[ \t]*|&$(chimes_SYSPATH) |' ../Makefile.package
+      
+    # Grab the stable ChIMES library files from the repo
+      
+    git clone ssh://git@mybitbucket.llnl.gov:7999/chms/chimes_calculator.git ../../lib/chimes/chimes_calculator
+    cd ../../lib/chimes/chimes_calculator
+    git checkout baec0773988 --quiet # Use this specific (stable) release
+    cd -
+    
+    # Ensure package makefile is pointing to the right things
+    
+    sed -i -e 's|^PKG_INC =[ \t]*|&-I../../lib/chimes/chimes_calculator|' ../Makefile.package
+    sed -i -e 's|^PKG_PATH =[ \t]*|&../lib/chimes/chimes_calculator/chimesFF.cpp|' ../Makefile.package
+    sed -i -e 's|^PKG_LIB =[ \t]*|&-L../lib/chimes/chimes_calculator|' ../Makefile.package
   fi
 
   if (test -e ../Makefile.package.settings) then
-      echo "here"
     sed -i -e '/^include.*chimes.*$/d' ../Makefile.package.settings
     # multiline form needed for BSD sed on Macs
     sed -i -e '4 i \
@@ -55,8 +61,8 @@ include ..\/..\/lib\/chimes\/Makefile.lammps
   fi
 
 elif (test $1 = 0) then
-
-    pwd
+    
+    rm -rf ../../lib/chimes/chimes_calculator
 
   if (test -e ../Makefile.package) then
     sed -i -e 's/[^ \t]*chimes[^ \t]*//g' ../Makefile.package
