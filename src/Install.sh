@@ -1,10 +1,6 @@
 # Install/unInstall package files in LAMMPS
 # mode = 0/1/2 for uninstall/install/update
 
-# this is default Install.sh for all packages
-# if package has an auxiliary library or a file with a dependency,
-# then package dir has its own customized Install.sh
-
 mode=$1
 
 # enforce using portable C locale
@@ -35,3 +31,39 @@ action () {
 for file in *.cpp *.h; do
   test -f ${file} && action $file
 done
+
+# edit 2 Makefile.package files to include/exclude package info
+
+if (test $1 = 1) then
+
+  if (test -e ../Makefile.package) then
+    sed -i -e 's|^PKG_INC =[ \t]*|&-I../../lib/chimes/|' ../Makefile.package
+    sed -i -e 's|^PKG_PATH =[ \t]*|&-L../../lib/chimes/ |' ../Makefile.package
+#    sed -i -e 's|^PKG_CPP_DEPENDS =[ \t]*|&-L../../lib/chimes/chimesFF.cpp |' ../Makefile.package
+#    sed -i -e 's|^PKG_SYSINC =[ \t]*|&$(chimes_SYSINC) |' ../Makefile.package
+#    sed -i -e 's|^PKG_SYSLIB =[ \t]*|&$(chimes_SYSLIB) |' ../Makefile.package
+#    sed -i -e 's|^PKG_SYSPATH =[ \t]*|&$(chimes_SYSPATH) |' ../Makefile.package
+  fi
+
+  if (test -e ../Makefile.package.settings) then
+      echo "here"
+    sed -i -e '/^include.*chimes.*$/d' ../Makefile.package.settings
+    # multiline form needed for BSD sed on Macs
+    sed -i -e '4 i \
+include ..\/..\/lib\/chimes\/Makefile.lammps
+' ../Makefile.package.settings
+  fi
+
+elif (test $1 = 0) then
+
+    pwd
+
+  if (test -e ../Makefile.package) then
+    sed -i -e 's/[^ \t]*chimes[^ \t]*//g' ../Makefile.package
+  fi
+
+  if (test -e ../Makefile.package.settings) then
+    sed -i -e '/^include.*chimes.*$/d' ../Makefile.package.settings
+  fi
+
+fi
